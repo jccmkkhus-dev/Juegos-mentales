@@ -12,6 +12,7 @@
         button { background: var(--purple); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 92%; margin-top: 10px; transition: 0.2s; }
         button:hover { filter: brightness(1.1); }
         button:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-ranking { background: var(--blue) !important; }
         .btn-salir { background: #666 !important; margin-top: 20px; }
         .progreso { font-weight: bold; color: #666; margin-bottom: 5px; font-size: 0.9rem; }
         .timer { font-size: 2rem; font-weight: 900; color: var(--purple); background: #eee; width: 70px; height: 70px; line-height: 70px; border-radius: 50%; margin: 10px auto; border: 4px solid var(--purple); }
@@ -23,7 +24,7 @@
         .ranking-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         .admin-item { background: #fff9e6 !important; border-left: 4px solid gold; }
         .admin-tag { color: #d4af37; font-weight: bold; font-size: 0.75rem; border: 1px solid #d4af37; padding: 2px 5px; border-radius: 4px; margin-left: 5px; }
-        #game-section, #ranking-section, #loading { display: none; }
+        #game-section, #ranking-section, #loading, #admin-selector { display: none; }
         .flash-verde { background-color: #2ecc71 !important; }
         .flash-rojo { background-color: #e74c3c !important; }
         .sacudir { animation: shake 0.4s; }
@@ -38,6 +39,14 @@
         <input type="text" id="user" placeholder="Usuario (Siglas)">
         <input type="password" id="pass" placeholder="Contraseña">
         <button id="btnLogin" onclick="intentarLogin()">INICIAR</button>
+    </div>
+
+    <div id="admin-selector">
+        <h3 style="color: #d4af37;">👑 Modo Administrador</h3>
+        <p>¿Qué deseas hacer hoy?</p>
+        <button class="btn-ranking" onclick="verRankingDirecto()">IR AL RANKING</button>
+        <button onclick="comenzarJuegoAdmin()">JUGAR / TESTEAR</button>
+        <button class="btn-salir" onclick="salir()">CANCELAR</button>
     </div>
 
     <div id="loading">
@@ -103,11 +112,9 @@
         if (tipo === 'ok') {
             osc.frequency.setValueAtTime(600, audioCtx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
-            if (navigator.vibrate) navigator.vibrate(200);
         } else {
             osc.frequency.setValueAtTime(200, audioCtx.currentTime);
             osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.2);
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
         }
         osc.start(); osc.stop(audioCtx.currentTime + 0.4);
     }
@@ -115,25 +122,22 @@
     async function intentarLogin() {
         const u = document.getElementById('user').value.toUpperCase();
         const p = document.getElementById('pass').value;
-        const btn = document.getElementById('btnLogin');
-
-        if (new Date() > new Date('2026-03-31T12:00:00')) return alert("El plazo expiró.");
 
         if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
             usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
             
-            // BLOQUEO LOCAL: Si ya participó en este navegador (y no es admin)
-            if (localStorage.getItem('ya_jugo_' + u) && !usuarioActual.adm) {
-                alert("Ya has participado en este dispositivo. Cargando ranking...");
+            if (usuarioActual.adm) {
                 document.getElementById('login-section').style.display = 'none';
-                document.getElementById('loading').style.display = 'block';
-                const resp = await fetch(SCRIPT_URL);
-                const data = await resp.json();
-                mostrarRanking(data);
+                document.getElementById('admin-selector').style.display = 'block';
                 return;
             }
 
-            btn.disabled = true;
+            if (localStorage.getItem('ya_jugo_' + u)) {
+                alert("Ya has participado.");
+                verRankingDirecto();
+                return;
+            }
+
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
 
@@ -142,20 +146,33 @@
                 const data = await resp.json();
                 const yaJugoRemoto = data.find(row => row[0] === u);
 
-                // BLOQUEO REMOTO: Si ya hay datos en el Excel (y no es admin)
-                if (yaJugoRemoto && !usuarioActual.adm) {
-                    alert("Ya has participado anteriormente.");
+                if (yaJugoRemoto) {
+                    alert("Participación previa detectada.");
                     mostrarRanking(data);
                 } else {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('game-section').style.display = 'block';
                     cargarPregunta();
                 }
-            } catch (e) {
-                alert("Error de conexión. Intenta de nuevo.");
-                salir();
-            }
+            } catch (e) { alert("Error de red."); salir(); }
         } else { alert("Datos incorrectos."); }
+    }
+
+    async function verRankingDirecto() {
+        document.getElementById('admin-selector').style.display = 'none';
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('loading').style.display = 'block';
+        try {
+            const resp = await fetch(SCRIPT_URL);
+            const data = await resp.json();
+            mostrarRanking(data);
+        } catch (e) { alert("Error al cargar ranking."); salir(); }
+    }
+
+    function comenzarJuegoAdmin() {
+        document.getElementById('admin-selector').style.display = 'none';
+        document.getElementById('game-section').style.display = 'block';
+        cargarPregunta();
     }
 
     function cargarPregunta() {
@@ -204,21 +221,12 @@
     async function finalizar() {
         document.getElementById('game-section').style.display = 'none';
         document.getElementById('loading').style.display = 'block';
-        
-        // Marca de participación local (solo para no-admins)
-        if (!usuarioActual.adm) {
-            localStorage.setItem('ya_jugo_' + usuarioActual.id, "true");
-        }
-
+        if (!usuarioActual.adm) localStorage.setItem('ya_jugo_' + usuarioActual.id, "true");
         const payload = { usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm };
         try {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            setTimeout(async () => {
-                const resp = await fetch(SCRIPT_URL);
-                const data = await resp.json();
-                mostrarRanking(data);
-            }, 2500);
-        } catch (e) { alert("Error al guardar puntos."); salir(); }
+            setTimeout(verRankingDirecto, 2500);
+        } catch (e) { alert("Error al guardar."); salir(); }
     }
 
     function mostrarRanking(data) {
@@ -226,11 +234,7 @@
         document.getElementById('ranking-section').style.display = 'block';
         data.sort((a, b) => b[1] - a[1]);
         let html = "";
-        
-        if (usuarioActual.adm) {
-            html += `<p style="color: #d4af37; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">👑 VISTA ADMIN: COMPETENCIA COMPLETA</p>`;
-        }
-        
+        if (usuarioActual.adm) html += `<p style="color: #d4af37; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">👑 PANEL DE CONTROL ADMIN</p>`;
         data.forEach((row, index) => {
             const esAdmRow = row[3] === true || row[3] === "true" || row[3] === "TRUE";
             html += `<div class="ranking-item ${esAdmRow ? 'admin-item' : ''}">
@@ -246,10 +250,10 @@
         usuarioActual = null; indexPregunta = 0; puntosTotales = 0;
         document.getElementById('game-section').style.display = 'none';
         document.getElementById('ranking-section').style.display = 'none';
+        document.getElementById('admin-selector').style.display = 'none';
         document.getElementById('loading').style.display = 'none';
         document.getElementById('login-section').style.display = 'block';
         document.getElementById('user').value = ""; document.getElementById('pass').value = "";
-        document.getElementById('btnLogin').disabled = false;
     }
 </script>
 </body>
