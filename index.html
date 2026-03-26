@@ -14,13 +14,9 @@
         button:disabled { background: #ccc; cursor: not-allowed; }
         .btn-ranking { background: var(--blue) !important; }
         .btn-salir { background: #666 !important; margin-top: 20px; }
-        .progreso { font-weight: bold; color: #666; margin-bottom: 5px; font-size: 0.9rem; }
         .timer { font-size: 2rem; font-weight: 900; color: var(--purple); background: #eee; width: 70px; height: 70px; line-height: 70px; border-radius: 50%; margin: 10px auto; border: 4px solid var(--purple); }
         .opciones-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .opcion { padding: 20px 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; font-size: 0.9rem; transition: transform 0.1s; }
-        .opcion:active { transform: scale(0.95); }
-        .btn-0 { background: var(--red); } .btn-1 { background: var(--blue); }
-        .btn-2 { background: var(--orange); } .btn-3 { background: var(--green); }
+        .opcion { padding: 20px 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; font-size: 0.9rem; }
         .ranking-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         .admin-item { background: #fff9e6 !important; border-left: 4px solid gold; }
         .admin-tag { color: #d4af37; font-weight: bold; font-size: 0.75rem; border: 1px solid #d4af37; padding: 2px 5px; border-radius: 4px; margin-left: 5px; }
@@ -42,29 +38,26 @@
     </div>
 
     <div id="admin-selector">
-        <h3 style="color: #d4af37;">👑 Modo Administrador</h3>
-        <p>¿Qué deseas hacer hoy?</p>
-        <button class="btn-ranking" onclick="verRankingDirecto()">IR AL RANKING</button>
+        <h3 style="color: #d4af37;">👑 Panel Administrador</h3>
+        <button class="btn-ranking" onclick="verRankingDirecto()">VER RANKING GLOBAL</button>
         <button onclick="comenzarJuegoAdmin()">JUGAR / TESTEAR</button>
-        <button class="btn-salir" onclick="salir()">CANCELAR</button>
+        <button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
     </div>
 
     <div id="loading">
-        <p><strong>Sincronizando datos...</strong></p>
-        <button class="btn-salir" onclick="salir()">CANCELAR</button>
+        <p><strong>Cargando datos...</strong></p>
     </div>
 
     <div id="game-section">
-        <div class="progreso" id="contador-preguntas">Pregunta 1/15</div>
-        <div class="timer" id="timer">30</div>
+        <div id="timer" class="timer">30</div>
         <h3 id="pregunta-texto">...</h3>
         <div class="opciones-grid" id="opciones-container"></div>
     </div>
 
     <div id="ranking-section">
-        <h2>📊 Ranking Global</h2>
+        <h2 id="titulo-ranking">📊 Ranking</h2>
         <div id="lista-ranking" style="max-height: 350px; overflow-y: auto;"></div>
-        <button class="btn-salir" onclick="salir()">CERRAR SESIÓN</button>
+        <button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
     </div>
 </div>
 
@@ -72,12 +65,18 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtvxISD0sbBDgO3QIhZebCTpKxzXN83Cjv6vOzb9jWvapYzW0rxfvPWPifQcSffx_gtw/exec";
     
     const usuariosPermitidos = {
-        "JR": { cl: "josue2026", adm: true }, "MG": { cl: "Lara479", adm: true },
-        "JL": { cl: "zulu098", adm: false }, "RC": { cl: "Roger345", adm: false },
-        "FO": { cl: "Nigan367", adm: false }, "LD": { cl: "Zeta007", adm: false },
-        "LV": { cl: "Puma235", adm: false }, "MC": { cl: "pipa401", adm: false },
-        "MA": { cl: "Tero012", adm: false }, "LG": { cl: "Condor666", adm: false },
-        "SR": { cl: "Virus557", adm: false }, "PRUEBA": { cl: "prueba2026", adm: false }
+        "JR": { cl: "josue2026", adm: true }, 
+        "MG": { cl: "Lara479", adm: true },
+        "MA": { cl: "Tero012", adm: false },
+        "JL": { cl: "zulu098", adm: false }, 
+        "RC": { cl: "Roger345", adm: false },
+        "FO": { cl: "Nigan367", adm: false }, 
+        "LD": { cl: "Zeta007", adm: false },
+        "LV": { cl: "Puma235", adm: false }, 
+        "MC": { cl: "pipa401", adm: false },
+        "LG": { cl: "Condor666", adm: false },
+        "SR": { cl: "Virus557", adm: false }, 
+        "PRUEBA": { cl: "prueba2026", adm: false }
     };
 
     const preguntas = [
@@ -103,82 +102,91 @@
     let puntosTotales = 0;
     let tRestante = 30;
     let timerInterv;
-    let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function sonar(tipo) {
-        let osc = audioCtx.createOscillator();
-        let gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        if (tipo === 'ok') {
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
-        } else {
-            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.2);
-        }
-        osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-    }
-
-    async function intentarLogin() {
-        const u = document.getElementById('user').value.toUpperCase();
-        const p = document.getElementById('pass').value;
-
-        if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
-            usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
-            
+    // Al cargar la página, verificamos si hay una sesión activa
+    window.onload = function() {
+        const sesionGuardada = localStorage.getItem('sesion_activa');
+        if (sesionGuardada) {
+            usuarioActual = JSON.parse(sesionGuardada);
             if (usuarioActual.adm) {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('admin-selector').style.display = 'block';
-                return;
-            }
-
-            if (localStorage.getItem('ya_jugo_' + u)) {
-                alert("Ya has participado.");
+            } else {
                 verRankingDirecto();
-                return;
             }
+        }
+    };
 
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('loading').style.display = 'block';
+    async function intentarLogin() {
+        const u = document.getElementById('user').value.toUpperCase().trim();
+        const p = document.getElementById('pass').value;
+        if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
+            usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
+            
+            // Guardar sesión en el navegador
+            localStorage.setItem('sesion_activa', JSON.stringify(usuarioActual));
 
-            try {
-                const resp = await fetch(SCRIPT_URL);
-                const data = await resp.json();
-                const yaJugoRemoto = data.find(row => row[0] === u);
-
-                if (yaJugoRemoto) {
-                    alert("Participación previa detectada.");
-                    mostrarRanking(data);
+            if (usuarioActual.adm) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-selector').style.display = 'block';
+            } else {
+                if (localStorage.getItem('ya_jugo_' + u)) {
+                    verRankingDirecto();
                 } else {
-                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('login-section').style.display = 'none';
                     document.getElementById('game-section').style.display = 'block';
                     cargarPregunta();
                 }
-            } catch (e) { alert("Error de red."); salir(); }
-        } else { alert("Datos incorrectos."); }
+            }
+        } else { alert("Datos incorrectos"); }
     }
 
     async function verRankingDirecto() {
-        document.getElementById('admin-selector').style.display = 'none';
         document.getElementById('login-section').style.display = 'none';
+        document.getElementById('admin-selector').style.display = 'none';
         document.getElementById('loading').style.display = 'block';
         try {
             const resp = await fetch(SCRIPT_URL);
             const data = await resp.json();
             mostrarRanking(data);
-        } catch (e) { alert("Error al cargar ranking."); salir(); }
+        } catch (e) {
+            alert("Error al conectar con la base de datos.");
+            cerrarSesion();
+        }
     }
 
-    function comenzarJuegoAdmin() {
-        document.getElementById('admin-selector').style.display = 'none';
-        document.getElementById('game-section').style.display = 'block';
-        cargarPregunta();
+    function mostrarRanking(data) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('ranking-section').style.display = 'block';
+        
+        let lista = data.map(row => {
+            const id = String(row[0]).toUpperCase().trim();
+            const esAdmin = (id === "JR" || id === "MG" || String(row[3]).toUpperCase() === "TRUE");
+            return { id, pts: parseInt(row[1]) || 0, esAdmin };
+        });
+
+        if (!usuarioActual.adm) {
+            lista = lista.filter(u => !u.esAdmin);
+            document.getElementById('titulo-ranking').innerText = "📊 Ranking de Jugadores";
+        } else {
+            document.getElementById('titulo-ranking').innerText = "📊 Ranking Global (Admin)";
+        }
+
+        lista.sort((a, b) => b.pts - a.pts);
+
+        let html = "";
+        lista.forEach((u, i) => {
+            html += `<div class="ranking-item ${u.esAdmin ? 'admin-item' : ''}">
+                <span>${i + 1}. <b>${u.id}</b> ${u.esAdmin ? '<span class="admin-tag">👑 ADMIN</span>' : ''}</span>
+                <span>${u.pts} pts</span>
+            </div>`;
+        });
+        document.getElementById('lista-ranking').innerHTML = html || "<p>Sin datos.</p>";
     }
 
     function cargarPregunta() {
         if (indexPregunta >= preguntas.length) return finalizar();
         tRestante = 30;
-        document.getElementById('contador-preguntas').innerText = `Pregunta ${indexPregunta + 1}/15`;
         document.getElementById('timer').innerText = tRestante;
         document.getElementById('pregunta-texto').innerText = preguntas[indexPregunta].p;
         const cont = document.getElementById('opciones-container');
@@ -200,19 +208,16 @@
     function validar(idx) {
         clearInterval(timerInterv);
         const correcta = preguntas[indexPregunta].c === idx;
-        const mainCard = document.getElementById('main-card');
         if (correcta) {
-            sonar('ok');
             document.body.classList.add('flash-verde');
             puntosTotales += Math.round(500 + (tRestante * 16.66));
         } else {
-            sonar('error');
             document.body.classList.add('flash-rojo');
-            mainCard.classList.add('sacudir');
+            document.getElementById('main-card').classList.add('sacudir');
         }
         setTimeout(() => {
             document.body.classList.remove('flash-verde', 'flash-rojo');
-            mainCard.classList.remove('sacudir');
+            document.getElementById('main-card').classList.remove('sacudir');
             indexPregunta++;
             cargarPregunta();
         }, 1000);
@@ -222,38 +227,20 @@
         document.getElementById('game-section').style.display = 'none';
         document.getElementById('loading').style.display = 'block';
         if (!usuarioActual.adm) localStorage.setItem('ya_jugo_' + usuarioActual.id, "true");
-        const payload = { usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm };
-        try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            setTimeout(verRankingDirecto, 2500);
-        } catch (e) { alert("Error al guardar."); salir(); }
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm }) });
+        setTimeout(verRankingDirecto, 2000);
     }
 
-    function mostrarRanking(data) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('ranking-section').style.display = 'block';
-        data.sort((a, b) => b[1] - a[1]);
-        let html = "";
-        if (usuarioActual.adm) html += `<p style="color: #d4af37; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">👑 PANEL DE CONTROL ADMIN</p>`;
-        data.forEach((row, index) => {
-            const esAdmRow = row[3] === true || row[3] === "true" || row[3] === "TRUE";
-            html += `<div class="ranking-item ${esAdmRow ? 'admin-item' : ''}">
-                <span>${index + 1}. <b>${row[0]}</b> ${esAdmRow ? '<span class="admin-tag">👑 ADMIN</span>' : ''}</span>
-                <span>${row[1]} pts</span>
-            </div>`;
-        });
-        document.getElementById('lista-ranking').innerHTML = html || "<p>Sin resultados aún.</p>";
-    }
-
-    function salir() {
-        if (timerInterv) clearInterval(timerInterv);
-        usuarioActual = null; indexPregunta = 0; puntosTotales = 0;
-        document.getElementById('game-section').style.display = 'none';
-        document.getElementById('ranking-section').style.display = 'none';
+    function comenzarJuegoAdmin() {
         document.getElementById('admin-selector').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('login-section').style.display = 'block';
-        document.getElementById('user').value = ""; document.getElementById('pass').value = "";
+        document.getElementById('game-section').style.display = 'block';
+        cargarPregunta();
+    }
+
+    function cerrarSesion() {
+        // Borrar datos de sesión del navegador
+        localStorage.removeItem('sesion_activa');
+        location.reload();
     }
 </script>
 </body>
