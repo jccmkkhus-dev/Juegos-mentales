@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desafío Tipo Kahoot 2026 - Edición Final</title>
+    <title>Juegos Mentales Marzo 2026</title>
     <style>
         :root { --purple: #46178f; --blue: #1368ce; --green: #26890c; --red: #e21b3c; --orange: #d56a00; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f2f2f2; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; }
@@ -34,14 +34,14 @@
 
 <div class="card" id="main-card">
     <div id="login-section">
-        <h2 style="color: var(--purple);">🏆 Tipo Kahoot 2026</h2>
-        <input type="text" id="user" placeholder="Usuario (EJ: JR)">
+        <h2 style="color: var(--purple);">🏆 Juegos Mentales 2026</h2>
+        <input type="text" id="user" placeholder="Usuario (Siglas)">
         <input type="password" id="pass" placeholder="Contraseña">
         <button id="btnLogin" onclick="intentarLogin()">INICIAR</button>
     </div>
 
     <div id="loading">
-        <p><strong>Sincronizando con Drive...</strong></p>
+        <p><strong>Sincronizando datos...</strong></p>
         <button class="btn-salir" onclick="salir()">CANCELAR</button>
     </div>
 
@@ -117,10 +117,22 @@
         const p = document.getElementById('pass').value;
         const btn = document.getElementById('btnLogin');
 
-        if (new Date() > new Date('2026-03-31T12:00:00')) return alert("El plazo expiró el 31 de Marzo.");
+        if (new Date() > new Date('2026-03-31T12:00:00')) return alert("El plazo expiró.");
 
         if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
             usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
+            
+            // BLOQUEO LOCAL: Si ya participó en este navegador (y no es admin)
+            if (localStorage.getItem('ya_jugo_' + u) && !usuarioActual.adm) {
+                alert("Ya has participado en este dispositivo. Cargando ranking...");
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('loading').style.display = 'block';
+                const resp = await fetch(SCRIPT_URL);
+                const data = await resp.json();
+                mostrarRanking(data);
+                return;
+            }
+
             btn.disabled = true;
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
@@ -128,10 +140,11 @@
             try {
                 const resp = await fetch(SCRIPT_URL);
                 const data = await resp.json();
-                const yaJugo = data.find(row => row[0] === u);
+                const yaJugoRemoto = data.find(row => row[0] === u);
 
-                if (yaJugo && !usuarioActual.adm) {
-                    alert("Ya has participado.");
+                // BLOQUEO REMOTO: Si ya hay datos en el Excel (y no es admin)
+                if (yaJugoRemoto && !usuarioActual.adm) {
+                    alert("Ya has participado anteriormente.");
                     mostrarRanking(data);
                 } else {
                     document.getElementById('loading').style.display = 'none';
@@ -139,7 +152,7 @@
                     cargarPregunta();
                 }
             } catch (e) {
-                alert("Error de conexión.");
+                alert("Error de conexión. Intenta de nuevo.");
                 salir();
             }
         } else { alert("Datos incorrectos."); }
@@ -191,6 +204,12 @@
     async function finalizar() {
         document.getElementById('game-section').style.display = 'none';
         document.getElementById('loading').style.display = 'block';
+        
+        // Marca de participación local (solo para no-admins)
+        if (!usuarioActual.adm) {
+            localStorage.setItem('ya_jugo_' + usuarioActual.id, "true");
+        }
+
         const payload = { usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm };
         try {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -199,7 +218,7 @@
                 const data = await resp.json();
                 mostrarRanking(data);
             }, 2500);
-        } catch (e) { alert("Error al guardar."); salir(); }
+        } catch (e) { alert("Error al guardar puntos."); salir(); }
     }
 
     function mostrarRanking(data) {
@@ -207,9 +226,11 @@
         document.getElementById('ranking-section').style.display = 'block';
         data.sort((a, b) => b[1] - a[1]);
         let html = "";
+        
         if (usuarioActual.adm) {
-            html += `<p style="color: gold; font-weight: bold; font-size: 0.8rem;">✨ VISTA ADMIN: COMPETENCIA JR vs MG ACTIVADA</p>`;
+            html += `<p style="color: #d4af37; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">👑 VISTA ADMIN: COMPETENCIA COMPLETA</p>`;
         }
+        
         data.forEach((row, index) => {
             const esAdmRow = row[3] === true || row[3] === "true" || row[3] === "TRUE";
             html += `<div class="ranking-item ${esAdmRow ? 'admin-item' : ''}">
@@ -217,7 +238,7 @@
                 <span>${row[1]} pts</span>
             </div>`;
         });
-        document.getElementById('lista-ranking').innerHTML = html || "<p>Sin resultados.</p>";
+        document.getElementById('lista-ranking').innerHTML = html || "<p>Sin resultados aún.</p>";
     }
 
     function salir() {
