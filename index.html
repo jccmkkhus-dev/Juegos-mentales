@@ -11,12 +11,21 @@
         input { width: 85%; padding: 12px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
         button { background: var(--purple); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 92%; margin-top: 10px; transition: 0.2s; }
         button:hover { filter: brightness(1.1); }
-        button:disabled { background: #ccc; cursor: not-allowed; }
         .btn-ranking { background: var(--blue) !important; }
         .btn-salir { background: #666 !important; margin-top: 20px; }
         .timer { font-size: 2rem; font-weight: 900; color: var(--purple); background: #eee; width: 70px; height: 70px; line-height: 70px; border-radius: 50%; margin: 10px auto; border: 4px solid var(--purple); }
+        
+        /* ESTILOS DE OPCIONES CORREGIDOS */
         .opciones-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .opcion { padding: 20px 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; font-size: 0.9rem; }
+        .opcion { padding: 20px 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; font-size: 1rem; transition: transform 0.1s; border: none; }
+        .opcion:active { transform: scale(0.95); }
+        
+        /* COLORES DE LOS BOTONES (Faltaban en tu versión anterior) */
+        .btn-0 { background-color: var(--red) !important; }
+        .btn-1 { background-color: var(--blue) !important; }
+        .btn-2 { background-color: var(--orange) !important; }
+        .btn-3 { background-color: var(--green) !important; }
+
         .ranking-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         .admin-item { background: #fff9e6 !important; border-left: 4px solid gold; }
         .admin-tag { color: #d4af37; font-weight: bold; font-size: 0.75rem; border: 1px solid #d4af37; padding: 2px 5px; border-radius: 4px; margin-left: 5px; }
@@ -103,7 +112,6 @@
     let tRestante = 30;
     let timerInterv;
 
-    // Al cargar la página, verificamos si hay una sesión activa
     window.onload = function() {
         const sesionGuardada = localStorage.getItem('sesion_activa');
         if (sesionGuardada) {
@@ -122,10 +130,7 @@
         const p = document.getElementById('pass').value;
         if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
             usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
-            
-            // Guardar sesión en el navegador
             localStorage.setItem('sesion_activa', JSON.stringify(usuarioActual));
-
             if (usuarioActual.adm) {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('admin-selector').style.display = 'block';
@@ -192,7 +197,7 @@
         const cont = document.getElementById('opciones-container');
         cont.innerHTML = "";
         preguntas[indexPregunta].r.forEach((opc, i) => {
-            const d = document.createElement('div');
+            const d = document.createElement('button');
             d.className = `opcion btn-${i}`;
             d.innerText = opc;
             d.onclick = () => validar(i);
@@ -238,7 +243,6 @@
     }
 
     function cerrarSesion() {
-        // Borrar datos de sesión del navegador
         localStorage.removeItem('sesion_activa');
         location.reload();
     }
