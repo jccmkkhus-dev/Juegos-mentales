@@ -7,11 +7,23 @@
     <style>
         :root { --purple: #46178f; --blue: #1368ce; --green: #26890c; --red: #e21b3c; --orange: #d56a00; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f2f2f2; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; }
-        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 90%; max-width: 500px; text-align: center; position: relative; }
+        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 95%; max-width: 600px; text-align: center; position: relative; }
         
         .progreso { position: absolute; top: 20px; right: 25px; background: var(--purple); color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; }
         
-        .pregunta-img { max-width: 100%; height: auto; border-radius: 10px; margin: 15px 0; display: none; max-height: 250px; object-fit: contain; border: 2px solid #eee; }
+        /* IMAGEN MÁS GRANDE */
+        .pregunta-img { 
+            width: 100%; 
+            max-width: 550px; 
+            height: auto; 
+            border-radius: 12px; 
+            margin: 15px 0; 
+            display: none; 
+            max-height: 400px; 
+            object-fit: contain; 
+            border: 3px solid #eee;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
         input { width: 85%; padding: 12px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
         button { background: var(--purple); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 92%; margin-top: 10px; transition: 0.2s; }
@@ -22,7 +34,7 @@
         .timer { font-size: 2rem; font-weight: 900; color: var(--purple); background: #eee; width: 70px; height: 70px; line-height: 70px; border-radius: 50%; margin: 10px auto; border: 4px solid var(--purple); }
         
         .opciones-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
-        @media (min-width: 400px) { .opciones-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 450px) { .opciones-grid { grid-template-columns: 1fr 1fr; } }
 
         .opcion { padding: 15px 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; min-height: 55px; text-align: left; font-size: 0.95rem; transition: transform 0.1s; border: none; width: 100%; }
         .opcion span { background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 4px; margin-right: 10px; min-width: 20px; text-align: center; }
@@ -61,7 +73,7 @@
 
     <div id="game-section">
         <div id="timer" class="timer">30</div>
-        <img id="pregunta-imagen" class="pregunta-img" src="" alt="Imagen de soporte">
+        <img id="pregunta-imagen" class="pregunta-img" src="" alt="Imagen de la pregunta">
         <h3 id="pregunta-texto">Cargando...</h3>
         <div class="opciones-grid" id="opciones-container"></div>
     </div>
@@ -86,11 +98,8 @@
     };
 
     const preguntas = [
-        // 1. Personalizada
         { p: "¿Cuál de estos snacks evita Leo?", r: ["Galleta de Arroz", "Manzana", "Banana", "Avena", "Chocolate"], c: 4 },
-        // 2. Personalizada
         { p: "¿Qué operador se identifica con el número 666?", r: ["Virus", "Negan", "Condor", "Pipa", "Tero"], c: 2 },
-        // 3. Imagen (CORREGIDA CON LINK EXTERNO)
         { 
             p: "¿Quién es este operador?", 
             img: "https://i.ibb.co/S43g18WT/image-92a839.jpg", 
@@ -98,11 +107,10 @@
             c: 2 
         },
         
-        // --- ESPACIO PARA TUS ÚLTIMAS 2 PREGUNTAS ---
+        // --- ESPACIO PARA TUS ÚLTIMAS 2 PREGUNTAS PERSONALIZADAS ---
         { p: "¿Qué ciudad es conocida como la 'Gran Manzana'?", r: ["Londres", "París", "Nueva York", "Roma", "Tokio"], c: 2 },
         { p: "¿En qué país se inventó el papel?", r: ["Egipto", "Grecia", "China", "India"], c: 2 },
 
-        // CULTURA GENERAL RESTANTE
         { p: "¿Cuál es el animal terrestre más veloz?", r: ["León", "Gacela", "Guepardo", "Caballo", "Tigre"], c: 2 },
         { p: "¿Qué satélite natural tiene la Tierra?", r: ["Titán", "Europa", "La Luna", "Ganímedes"], c: 2 },
         { p: "¿Cuál es el tercer planeta desde el Sol?", r: ["Marte", "Venus", "La Tierra", "Júpiter", "Saturno"], c: 2 },
@@ -113,8 +121,6 @@
         { p: "¿Qué país tiene forma de bota?", r: ["Grecia", "España", "Italia", "Portugal"], c: 2 },
         { p: "¿De qué color es la caja negra de los aviones?", r: ["Negro", "Naranja", "Rojo", "Azul", "Blanco"], c: 1 },
         { p: "¿Componente principal del Sol?", r: ["Oxígeno", "Carbono", "Hidrógeno", "Helio", "Nitrógeno"], c: 2 },
-        
-        // VERDADERO O FALSO
         { p: "¿El Sahara es el lugar más seco de la Tierra?", r: ["Verdadero", "Falso"], c: 1 },
         { p: "¿La luz viaja más rápido que el sonido?", r: ["Verdadero", "Falso"], c: 0 },
         { p: "¿Brasil es el único sudamericano que habla portugués?", r: ["Verdadero", "Falso"], c: 0 },
@@ -126,7 +132,7 @@
     const letras = ["A", "B", "C", "D", "E"];
 
     window.onload = function() {
-        const sesion = localStorage.getItem('sesion_abril_v4');
+        const sesion = localStorage.getItem('sesion_abril_v_final');
         if (sesion) {
             usuarioActual = JSON.parse(sesion);
             usuarioActual.adm ? mostrar('admin-selector') : verRankingDirecto();
@@ -143,9 +149,9 @@
         const u = document.getElementById('user').value.toUpperCase().trim(), p = document.getElementById('pass').value;
         if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
             usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
-            localStorage.setItem('sesion_abril_v4', JSON.stringify(usuarioActual));
+            localStorage.setItem('sesion_abril_v_final', JSON.stringify(usuarioActual));
             if (usuarioActual.adm) mostrar('admin-selector');
-            else localStorage.getItem('jugado_abril_v4_'+u) ? verRankingDirecto() : comenzarJuego();
+            else localStorage.getItem('jugado_abril_v_final_'+u) ? verRankingDirecto() : comenzarJuego();
         } else alert("Credenciales incorrectas");
     }
 
@@ -201,7 +207,7 @@
 
     async function finalizar() {
         mostrar('loading');
-        if (!usuarioActual.adm) localStorage.setItem('jugado_abril_v4_'+usuarioActual.id, "true");
+        if (!usuarioActual.adm) localStorage.setItem('jugado_abril_v_final_'+usuarioActual.id, "true");
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm }) });
         setTimeout(verRankingDirecto, 1500);
     }
@@ -221,7 +227,7 @@
         } catch (e) { alert("Error de red"); cerrarSesion(); }
     }
 
-    function cerrarSesion() { localStorage.removeItem('sesion_abril_v4'); location.reload(); }
+    function cerrarSesion() { localStorage.removeItem('sesion_abril_v_final'); location.reload(); }
 </script>
 </body>
 </html>
