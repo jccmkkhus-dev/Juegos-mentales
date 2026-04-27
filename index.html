@@ -5,45 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juegos Mentales Abril 2026</title>
     <style>
-        :root { --purple: #46178f; --blue: #1368ce; --green: #26890c; --red: #e21b3c; --orange: #d56a00; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f2f2f2; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; }
-        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 95%; max-width: 600px; text-align: center; position: relative; }
-        
-        .progreso { position: absolute; top: 20px; right: 25px; background: var(--purple); color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; }
-        
-        /* IMAGEN MÁS GRANDE */
-        .pregunta-img { 
-            width: 100%; 
-            max-width: 550px; 
-            height: auto; 
-            border-radius: 12px; 
-            margin: 15px 0; 
-            display: none; 
-            max-height: 400px; 
-            object-fit: contain; 
-            border: 3px solid #eee;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        :root { 
+            --purple: #46178f; --blue: #1368ce; --green: #26890c; --red: #e21b3c; --orange: #d56a00;
+            --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
         }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #0f0c29; background: linear-gradient(to bottom, #24243e, #302b63, #0f0c29); display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; color: #333; }
+        
+        .card { background: rgba(255, 255, 255, 0.95); padding: 2rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 95%; max-width: 600px; text-align: center; position: relative; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        
+        .progreso { position: absolute; top: 20px; right: 25px; background: var(--purple); color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; box-shadow: 0 4px 10px rgba(70, 23, 143, 0.3); }
+        
+        .pregunta-img { width: 100%; max-width: 550px; height: auto; border-radius: 12px; margin: 15px 0; display: none; max-height: 350px; object-fit: contain; border: 3px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        input { width: 85%; padding: 12px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
-        button { background: var(--purple); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 92%; margin-top: 10px; transition: 0.2s; }
-        button:hover { filter: brightness(1.1); }
-        .btn-ranking { background: var(--blue) !important; }
-        .btn-salir { background: #666 !important; margin-top: 20px; }
+        input { width: 85%; padding: 14px; margin: 10px 0; border: 2px solid #eee; border-radius: 12px; font-size: 1rem; transition: 0.3s; }
+        input:focus { border-color: var(--purple); outline: none; box-shadow: 0 0 10px rgba(70, 23, 143, 0.1); }
         
-        .timer { font-size: 2rem; font-weight: 900; color: var(--purple); background: #eee; width: 70px; height: 70px; line-height: 70px; border-radius: 50%; margin: 10px auto; border: 4px solid var(--purple); }
+        button { background: var(--purple); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 92%; margin-top: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); filter: brightness(1.1); }
         
-        .opciones-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
+        .btn-ranking { background: linear-gradient(45deg, #1368ce, #004da3) !important; }
+        .btn-salir { background: #444 !important; margin-top: 25px; font-size: 0.8rem; width: auto; padding: 10px 25px; }
+        
+        .timer { font-size: 2.2rem; font-weight: 900; color: var(--purple); background: #fff; width: 80px; height: 80px; line-height: 80px; border-radius: 50%; margin: 10px auto; border: 5px solid var(--purple); box-shadow: 0 0 20px rgba(70, 23, 143, 0.2); }
+        
+        /* ESTILOS DEL RANKING PROFESIONAL */
+        #lista-ranking { margin-top: 20px; border-radius: 15px; overflow: hidden; background: #fdfdfd; }
+        .ranking-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
+        .ranking-item:last-child { border-bottom: none; }
+        .ranking-item:hover { background: #f8f9ff; }
+
+        .rank-pos { width: 40px; font-weight: 900; font-size: 1.2rem; color: #999; }
+        .rank-name { flex-grow: 1; text-align: left; font-weight: 600; color: #2c3e50; font-size: 1.1rem; }
+        .rank-pts { font-family: 'Courier New', monospace; font-weight: bold; color: var(--purple); font-size: 1.2rem; background: #f0ebf7; padding: 4px 12px; border-radius: 8px; }
+
+        /* Medallas para el Podio */
+        .pos-1 .rank-pos { color: var(--gold); font-size: 1.6rem; }
+        .pos-1 { background: linear-gradient(to right, #fffdf2, #fff); border-left: 5px solid var(--gold); }
+        .pos-2 .rank-pos { color: var(--silver); }
+        .pos-3 .rank-pos { color: var(--bronze); }
+
+        .admin-item { background: #f0f7ff !important; border-left: 5px solid var(--blue); }
+        .admin-item .rank-name::after { content: " 👑"; font-size: 0.8rem; }
+
+        .opciones-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
         @media (min-width: 450px) { .opciones-grid { grid-template-columns: 1fr 1fr; } }
 
-        .opcion { padding: 15px 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; min-height: 55px; text-align: left; font-size: 0.95rem; transition: transform 0.1s; border: none; width: 100%; }
-        .opcion span { background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 4px; margin-right: 10px; min-width: 20px; text-align: center; }
-        
-        .btn-0 { background-color: var(--red) !important; }
-        .btn-1 { background-color: var(--blue) !important; }
-        .btn-2 { background-color: var(--orange) !important; }
-        .btn-3 { background-color: var(--green) !important; }
-        .btn-4 { background-color: var(--purple) !important; }
+        .opcion { padding: 15px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; border: none; transition: 0.2s; }
+        .opcion span { background: rgba(0,0,0,0.15); width: 30px; height: 30px; line-height: 30px; border-radius: 6px; margin-right: 12px; text-align: center; flex-shrink: 0; }
+        .opcion:active { transform: scale(0.95); }
 
         #game-section, #ranking-section, #loading, #admin-selector { display: none; }
         .flash-verde { background-color: #2ecc71 !important; }
@@ -56,32 +65,36 @@
     <div id="progreso-texto" class="progreso" style="display: none;">1/20</div>
 
     <div id="login-section">
-        <h2 style="color: var(--purple);">🏆 Juegos Mentales Abril</h2>
-        <input type="text" id="user" placeholder="Usuario (Siglas)">
+        <h1 style="color: var(--purple); margin-bottom: 5px;">Juegos Mentales</h1>
+        <p style="color: #666; margin-bottom: 25px;">Temporada Abril 2026</p>
+        <input type="text" id="user" placeholder="Siglas de Usuario">
         <input type="password" id="pass" placeholder="Contraseña">
-        <button onclick="intentarLogin()">INICIAR SESIÓN</button>
+        <button onclick="intentarLogin()">Entrar al Desafío</button>
     </div>
 
     <div id="admin-selector">
-        <h3 style="color: #d4af37;">👑 Panel Admin Abril</h3>
-        <button class="btn-ranking" onclick="verRankingDirecto()">VER RANKING</button>
-        <button onclick="comenzarJuegoAdmin()">PROBAR JUEGO</button>
-        <button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+        <h3 style="color: var(--blue);">👑 Modo Administrador</h3>
+        <button class="btn-ranking" onclick="verRankingDirecto()">Ver Ranking Global</button>
+        <button onclick="comenzarJuegoAdmin()">Probar Cuestionario</button>
+        <button class="btn-salir" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
-    <div id="loading"><p>Procesando...</p></div>
+    <div id="loading">
+        <div style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--purple); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p>Sincronizando datos...</p>
+    </div>
 
     <div id="game-section">
         <div id="timer" class="timer">30</div>
-        <img id="pregunta-imagen" class="pregunta-img" src="" alt="Imagen de la pregunta">
-        <h3 id="pregunta-texto">Cargando...</h3>
+        <img id="pregunta-imagen" class="pregunta-img" src="" alt="Pregunta">
+        <h3 id="pregunta-texto" style="font-size: 1.3rem; color: #2c3e50; margin: 20px 0;"></h3>
         <div class="opciones-grid" id="opciones-container"></div>
     </div>
 
     <div id="ranking-section">
-        <h2 id="titulo-ranking">📊 Ranking Abril 2026</h2>
-        <div id="lista-ranking" style="max-height: 350px; overflow-y: auto;"></div>
-        <button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+        <h2 style="color: #2c3e50; margin-bottom: 10px;">🏆 Tabla de Posiciones</h2>
+        <div id="lista-ranking"></div>
+        <button class="btn-salir" onclick="cerrarSesion()">Salir del Sistema</button>
     </div>
 </div>
 
@@ -106,11 +119,8 @@
             r: ["Tero", "Pipa", "Roger", "Beraca", "Bukavu"], 
             c: 2 
         },
-        
-        // --- ESPACIO PARA TUS ÚLTIMAS 2 PREGUNTAS PERSONALIZADAS ---
         { p: "¿Qué ciudad es conocida como la 'Gran Manzana'?", r: ["Londres", "París", "Nueva York", "Roma", "Tokio"], c: 2 },
         { p: "¿En qué país se inventó el papel?", r: ["Egipto", "Grecia", "China", "India"], c: 2 },
-
         { p: "¿Cuál es el animal terrestre más veloz?", r: ["León", "Gacela", "Guepardo", "Caballo", "Tigre"], c: 2 },
         { p: "¿Qué satélite natural tiene la Tierra?", r: ["Titán", "Europa", "La Luna", "Ganímedes"], c: 2 },
         { p: "¿Cuál es el tercer planeta desde el Sol?", r: ["Marte", "Venus", "La Tierra", "Júpiter", "Saturno"], c: 2 },
@@ -132,7 +142,7 @@
     const letras = ["A", "B", "C", "D", "E"];
 
     window.onload = function() {
-        const sesion = localStorage.getItem('sesion_abril_v_final');
+        const sesion = localStorage.getItem('sesion_abril_v_pro');
         if (sesion) {
             usuarioActual = JSON.parse(sesion);
             usuarioActual.adm ? mostrar('admin-selector') : verRankingDirecto();
@@ -149,10 +159,10 @@
         const u = document.getElementById('user').value.toUpperCase().trim(), p = document.getElementById('pass').value;
         if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
             usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
-            localStorage.setItem('sesion_abril_v_final', JSON.stringify(usuarioActual));
+            localStorage.setItem('sesion_abril_v_pro', JSON.stringify(usuarioActual));
             if (usuarioActual.adm) mostrar('admin-selector');
-            else localStorage.getItem('jugado_abril_v_final_'+u) ? verRankingDirecto() : comenzarJuego();
-        } else alert("Credenciales incorrectas");
+            else localStorage.getItem('jugado_abril_v_pro_'+u) ? verRankingDirecto() : comenzarJuego();
+        } else alert("Usuario o contraseña incorrectos");
     }
 
     function comenzarJuego() { mostrar('game-section'); cargarPregunta(); }
@@ -160,9 +170,7 @@
 
     function cargarPregunta() {
         if (indexPregunta >= preguntas.length) return finalizar();
-        
         document.getElementById('progreso-texto').innerText = `${indexPregunta + 1} / ${preguntas.length}`;
-        
         const preg = preguntas[indexPregunta];
         const imgEl = document.getElementById('pregunta-imagen');
         
@@ -181,7 +189,7 @@
         
         preg.r.forEach((opc, i) => {
             const btn = document.createElement('button');
-            btn.className = `opcion btn-${i}`;
+            btn.className = `opcion btn-${Math.min(i, 4)}`;
             btn.innerHTML = `<span>${letras[i]}</span> ${opc}`;
             btn.onclick = () => validar(i);
             cont.appendChild(btn);
@@ -207,7 +215,7 @@
 
     async function finalizar() {
         mostrar('loading');
-        if (!usuarioActual.adm) localStorage.setItem('jugado_abril_v_final_'+usuarioActual.id, "true");
+        if (!usuarioActual.adm) localStorage.setItem('jugado_abril_v_pro_'+usuarioActual.id, "true");
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm }) });
         setTimeout(verRankingDirecto, 1500);
     }
@@ -220,14 +228,25 @@
             let lista = d.map(row => ({ id: row[0], pts: row[1], adm: row[3] == "true" || row[0] == "JR" || row[0] == "MG" }));
             if (!usuarioActual.adm) lista = lista.filter(u => !u.adm);
             lista.sort((a,b) => b.pts - a.pts);
-            document.getElementById('lista-ranking').innerHTML = lista.map((u, i) => `
-                <div class="ranking-item ${u.adm ? 'admin-item' : ''}">
-                    <span>${i+1}. <b>${u.id}</b></span><span>${u.pts} pts</span>
-                </div>`).join('') || "Sin registros.";
-        } catch (e) { alert("Error de red"); cerrarSesion(); }
+            
+            document.getElementById('lista-ranking').innerHTML = lista.map((u, i) => {
+                const posClass = i < 3 ? `pos-${i+1}` : '';
+                const adminClass = u.adm ? 'admin-item' : '';
+                return `
+                <div class="ranking-item ${posClass} ${adminClass}">
+                    <div class="rank-pos">${i+1}</div>
+                    <div class="rank-name">${u.id}</div>
+                    <div class="rank-pts">${u.pts}</div>
+                </div>`;
+            }).join('') || "<p style='padding:20px'>Aún no hay puntuaciones registradas.</p>";
+        } catch (e) { alert("Error de conexión con la base de datos."); cerrarSesion(); }
     }
 
-    function cerrarSesion() { localStorage.removeItem('sesion_abril_v_final'); location.reload(); }
+    function cerrarSesion() { localStorage.removeItem('sesion_abril_v_pro'); location.reload(); }
 </script>
+
+<style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
 </body>
 </html>
