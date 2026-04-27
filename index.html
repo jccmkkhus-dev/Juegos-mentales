@@ -10,47 +10,46 @@
             --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
         }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #0f0c29; background: linear-gradient(to bottom, #24243e, #302b63, #0f0c29); display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; color: #333; }
-        
         .card { background: rgba(255, 255, 255, 0.98); padding: 2rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 95%; max-width: 600px; text-align: center; position: relative; backdrop-filter: blur(10px); }
-        
-        .progreso { position: absolute; top: 20px; right: 25px; background: var(--purple); color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; box-shadow: 0 4px 10px rgba(70, 23, 143, 0.3); }
-        
+        .progreso { position: absolute; top: 20px; right: 25px; background: var(--purple); color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; }
         .pregunta-img { width: 100%; max-width: 550px; height: auto; border-radius: 12px; margin: 15px 0; display: none; max-height: 350px; object-fit: contain; border: 3px solid #eee; }
-
         input { width: 85%; padding: 14px; margin: 10px 0; border: 2px solid #eee; border-radius: 12px; font-size: 1rem; }
-        
         button { background: var(--purple); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 92%; margin-top: 10px; transition: 0.3s; text-transform: uppercase; }
         button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        
         .btn-ranking { background: linear-gradient(45deg, #1368ce, #004da3) !important; }
         .btn-salir { background: #444 !important; margin-top: 25px; font-size: 0.8rem; width: auto; padding: 10px 25px; }
+        .timer { font-size: 2.2rem; font-weight: 900; color: var(--purple); background: #fff; width: 80px; height: 80px; line-height: 80px; border-radius: 50%; margin: 10px auto; border: 5px solid var(--purple); }
         
-        .timer { font-size: 2.2rem; font-weight: 900; color: var(--purple); background: #fff; width: 80px; height: 80px; line-height: 80px; border-radius: 50%; margin: 10px auto; border: 5px solid var(--purple); box-shadow: 0 0 20px rgba(70, 23, 143, 0.2); }
-        
-        /* COLORES DIFERENCIADOS PARA LAS OPCIONES */
-        .opcion { padding: 15px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; border: none; transition: 0.2s; font-size: 1rem; }
+        .opcion { padding: 15px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; border: none; transition: 0.2s; font-size: 1rem; width: 100%; text-align: left; }
         .opcion span { background: rgba(0,0,0,0.2); width: 32px; height: 32px; line-height: 32px; border-radius: 6px; margin-right: 12px; text-align: center; flex-shrink: 0; }
-
         .btn-0 { background-color: var(--red) !important; }
         .btn-1 { background-color: var(--blue) !important; }
         .btn-2 { background-color: var(--orange) !important; }
         .btn-3 { background-color: var(--green) !important; }
         .btn-4 { background-color: var(--purple) !important; }
-
-        /* RANKING */
+        
+        /* ESTILOS DE RANKING FINAL */
         #lista-ranking { margin-top: 20px; border-radius: 15px; overflow: hidden; background: #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
         .ranking-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f0f0f0; }
-        .rank-pos { width: 40px; font-weight: 900; font-size: 1.2rem; color: #bbb; }
-        .rank-name { flex-grow: 1; text-align: left; font-weight: 600; color: #2c3e50; }
+        
+        /* Lado izquierdo: Posición */
+        .rank-pos { width: 40px; font-weight: 900; font-size: 1.2rem; color: #333; } 
+        .pos-1 .rank-pos { color: var(--gold); }
+        .pos-2 .rank-pos { color: var(--silver); }
+        .pos-3 .rank-pos { color: var(--bronze); }
+
+        .rank-name { flex-grow: 1; text-align: left; font-weight: 600; color: #333; }
+
+        /* Lado derecho: Puntos (Violetas por siempre) */
         .rank-pts { font-family: 'Courier New', monospace; font-weight: bold; color: var(--purple); font-size: 1.2rem; background: #f0ebf7; padding: 4px 12px; border-radius: 8px; }
 
-        .pos-1 { background: linear-gradient(to right, #fffdf2, #fff); border-left: 5px solid var(--gold); }
-        .pos-1 .rank-pos { color: var(--gold); }
+        .pos-1 { border-left: 5px solid var(--gold); background: #fffdf0; }
+        .pos-2 { border-left: 5px solid var(--silver); background: #f9f9f9; }
+        .pos-3 { border-left: 5px solid var(--bronze); background: #fffaf5; }
         .admin-item { background: #f0f7ff !important; border-left: 5px solid var(--blue); }
 
         .opciones-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
         @media (min-width: 450px) { .opciones-grid { grid-template-columns: 1fr 1fr; } }
-
         #game-section, #ranking-section, #loading, #admin-selector { display: none; }
         .flash-verde { background-color: #2ecc71 !important; }
         .flash-rojo { background-color: #e74c3c !important; }
@@ -76,7 +75,7 @@
         <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
     </div>
 
-    <div id="loading"><p>Procesando...</p></div>
+    <div id="loading"><p id="loading-text">Cargando...</p></div>
 
     <div id="game-section">
         <div id="timer" class="timer">30</div>
@@ -86,7 +85,7 @@
     </div>
 
     <div id="ranking-section">
-        <h2 style="color: #2c3e50;">🏆 Ranking</h2>
+        <h2 style="color: #2c3e50;">🏆 Ranking Final</h2>
         <div id="lista-ranking"></div>
         <button class="btn-salir" onclick="cerrarSesion()">Cerrar</button>
     </div>
@@ -94,6 +93,7 @@
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqBCndi5xk3BnAQilJ1XeCHmaqvUfSLt9uZZvpL5qB03Ow8Befd_xlDbSehPQ8FAg9gQ/exec";
+    const VERSION = "V_ABRIL_SECURITY_FINAL_V2"; 
     
     const usuariosPermitidos = {
         "JR": { cl: "josue2026", adm: true }, "MG": { cl: "Lara479", adm: true },
@@ -107,12 +107,7 @@
     const preguntas = [
         { p: "¿Cuál de estos snacks evita Leo?", r: ["Galleta de Arroz", "Manzana", "Banana", "Avena", "Chocolate"], c: 4 },
         { p: "¿Qué operador se identifica con el número 666?", r: ["Virus", "Negan", "Condor", "Pipa", "Tero"], c: 2 },
-        { 
-            p: "¿Quién es este operador?", 
-            img: "https://i.ibb.co/S43g18WT/image-92a839.jpg", 
-            r: ["Tero", "Pipa", "Roger", "Beraca", "Bukavu"], 
-            c: 2 
-        },
+        { p: "¿Quién es este operador?", img: "https://i.ibb.co/S43g18WT/image-92a839.jpg", r: ["Tero", "Pipa", "Roger", "Beraca", "Bukavu"], c: 2 },
         { p: "¿Qué ciudad es conocida como la 'Gran Manzana'?", r: ["Londres", "París", "Nueva York", "Roma", "Tokio"], c: 2 },
         { p: "¿En qué país se inventó el papel?", r: ["Egipto", "Grecia", "China", "India"], c: 2 },
         { p: "¿Cuál es el animal terrestre más veloz?", r: ["León", "Gacela", "Guepardo", "Caballo", "Tigre"], c: 2 },
@@ -135,14 +130,6 @@
     let usuarioActual = null, indexPregunta = 0, puntosTotales = 0, tRestante = 30, timerInterv;
     const letras = ["A", "B", "C", "D", "E"];
 
-    window.onload = function() {
-        const sesion = localStorage.getItem('sesion_abril_v_color');
-        if (sesion) {
-            usuarioActual = JSON.parse(sesion);
-            usuarioActual.adm ? mostrar('admin-selector') : verRankingDirecto();
-        }
-    };
-
     function mostrar(id) {
         ['login-section','admin-selector','game-section','ranking-section','loading'].forEach(s => document.getElementById(s).style.display = 'none');
         document.getElementById('progreso-texto').style.display = (id === 'game-section') ? 'block' : 'none';
@@ -150,41 +137,50 @@
     }
 
     async function intentarLogin() {
-        const u = document.getElementById('user').value.toUpperCase().trim(), p = document.getElementById('pass').value;
+        const u = document.getElementById('user').value.toUpperCase().trim();
+        const p = document.getElementById('pass').value;
         if (usuariosPermitidos[u] && usuariosPermitidos[u].cl === p) {
             usuarioActual = { id: u, adm: usuariosPermitidos[u].adm };
-            localStorage.setItem('sesion_abril_v_color', JSON.stringify(usuarioActual));
-            if (usuarioActual.adm) mostrar('admin-selector');
-            else localStorage.getItem('jugado_abril_v_color_'+u) ? verRankingDirecto() : comenzarJuego();
-        } else alert("Datos incorrectos");
+            localStorage.setItem('sesion_' + VERSION, JSON.stringify(usuarioActual));
+            if (usuarioActual.adm || u === "PRUEBA") {
+                mostrar('admin-selector');
+                return;
+            }
+            mostrar('loading');
+            document.getElementById('loading-text').innerText = "Verificando participación...";
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                if (data.some(row => row[0] === u)) {
+                    alert("Ya has participado. Solo se permite un intento.");
+                    verRankingDirecto();
+                } else { comenzarJuego(); }
+            } catch (e) { alert("Error de conexión."); mostrar('login-section'); }
+        } else { alert("Datos incorrectos."); }
     }
 
-    function comenzarJuego() { mostrar('game-section'); cargarPregunta(); }
-    function comenzarJuegoAdmin() { indexPregunta = 0; puntosTotales = 0; comenzarJuego(); }
+    function comenzarJuego() { indexPregunta = 0; puntosTotales = 0; mostrar('game-section'); cargarPregunta(); }
+    function comenzarJuegoAdmin() { comenzarJuego(); }
 
     function cargarPregunta() {
         if (indexPregunta >= preguntas.length) return finalizar();
         document.getElementById('progreso-texto').innerText = `${indexPregunta + 1} / ${preguntas.length}`;
         const preg = preguntas[indexPregunta];
         const imgEl = document.getElementById('pregunta-imagen');
-        
         imgEl.src = preg.img || "";
         imgEl.style.display = preg.img ? 'block' : 'none';
-
         tRestante = 30;
         document.getElementById('timer').innerText = tRestante;
         document.getElementById('pregunta-texto').innerText = preg.p;
         const cont = document.getElementById('opciones-container');
         cont.innerHTML = "";
-        
         preg.r.forEach((opc, i) => {
             const btn = document.createElement('button');
-            btn.className = `opcion btn-${i}`; // Aquí se aplican los colores por índice
+            btn.className = `opcion btn-${i}`;
             btn.innerHTML = `<span>${letras[i]}</span> ${opc}`;
             btn.onclick = () => validar(i);
             cont.appendChild(btn);
         });
-
         timerInterv = setInterval(() => {
             tRestante--;
             document.getElementById('timer').innerText = tRestante;
@@ -205,13 +201,14 @@
 
     async function finalizar() {
         mostrar('loading');
-        if (!usuarioActual.adm) localStorage.setItem('jugado_abril_v_color_'+usuarioActual.id, "true");
+        document.getElementById('loading-text').innerText = "Guardando puntuación...";
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ usuario: usuarioActual.id, puntos: puntosTotales, esAdmin: usuarioActual.adm }) });
         setTimeout(verRankingDirecto, 1500);
     }
 
     async function verRankingDirecto() {
         mostrar('loading');
+        document.getElementById('loading-text').innerText = "Cargando Ranking...";
         try {
             const r = await fetch(SCRIPT_URL), d = await r.json();
             mostrar('ranking-section');
@@ -219,16 +216,23 @@
             if (!usuarioActual.adm) lista = lista.filter(u => !u.adm);
             lista.sort((a,b) => b.pts - a.pts);
             
-            document.getElementById('lista-ranking').innerHTML = lista.map((u, i) => `
-                <div class="ranking-item ${i === 0 ? 'pos-1' : ''} ${u.adm ? 'admin-item' : ''}">
+            document.getElementById('lista-ranking').innerHTML = lista.map((u, i) => {
+                let posClass = "";
+                if(i === 0) posClass = "pos-1";
+                else if(i === 1) posClass = "pos-2";
+                else if(i === 2) posClass = "pos-3";
+
+                return `
+                <div class="ranking-item ${posClass} ${u.adm ? 'admin-item' : ''}">
                     <div class="rank-pos">${i+1}</div>
                     <div class="rank-name">${u.id} ${u.adm ? '👑' : ''}</div>
                     <div class="rank-pts">${u.pts}</div>
-                </div>`).join('') || "<p style='padding:20px'>Sin datos todavía.</p>";
-        } catch (e) { alert("Error de conexión"); cerrarSesion(); }
+                </div>`;
+            }).join('') || "<p style='padding:20px'>Sin datos.</p>";
+        } catch (e) { alert("Error al cargar."); cerrarSesion(); }
     }
 
-    function cerrarSesion() { localStorage.removeItem('sesion_abril_v_color'); location.reload(); }
+    function cerrarSesion() { localStorage.removeItem('sesion_' + VERSION); location.reload(); }
 </script>
 </body>
 </html>
